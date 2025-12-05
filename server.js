@@ -9,10 +9,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/advent-calendar', {
+// MongoDB Connection with better error handling
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/advent-calendar';
+console.log('Connecting to MongoDB...');
+
+mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+}).catch(err => {
+  console.error('MongoDB connection failed:', err.message);
+  process.exit(1);
+});
+
+mongoose.connection.on('connected', () => {
+  console.log('MongoDB connected successfully');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB error:', err);
 });
 
 // User Progress Schema
@@ -40,9 +54,22 @@ app.get('/', (req, res) => {
   });
 });
 
+// Health check - works without MongoDB
+app.get('/api/health', (req, res) => {
+  const mongooseConnected = mongoose.connection.readyState === 1;
+  res.json({ 
+    status: 'ok',
+    mongodb: mongooseConnected ? 'connected' : 'disconnected'
+  });
+});
+
 // Get user progress
 app.get('/api/progress/:username', async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ error: 'Database not connected' });
+    }
+    
     const progress = await UserProgress.findOne({ username: req.params.username });
     if (progress) {
       res.json(progress);
@@ -50,6 +77,7 @@ app.get('/api/progress/:username', async (req, res) => {
       res.json({ username: req.params.username, openedDays: [], boxChoice: null });
     }
   } catch (error) {
+    console.error('Error fetching progress:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -57,6 +85,10 @@ app.get('/api/progress/:username', async (req, res) => {
 // Save user progress
 app.post('/api/progress', async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ error: 'Database not connected' });
+    }
+
     const { username, openedDays, boxChoice } = req.body;
     
     const progress = await UserProgress.findOneAndUpdate(
@@ -67,16 +99,22 @@ app.post('/api/progress', async (req, res) => {
     
     res.json(progress);
   } catch (error) {
+    console.error('Error saving progress:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+const PORT = process.env.PORT || 5000;
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Graceful error handling
+server.on('error', (err) => {
+  console.error('Server error:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
