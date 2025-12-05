@@ -15,7 +15,7 @@
 
 1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 2. Create a free cluster
-3. Copy your connection string: `mongodb+srv://juliennemercado2115:adventCalendar25@advent-calendar.xeedidd.mongodb.net/`
+3. Copy your connection string from MongoDB Atlas dashboard (format: `mongodb+srv://USERNAME:PASSWORD@cluster.mongodb.net/database-name`)
 
 #### Step 2: Deploy Backend
 
