@@ -38,8 +38,6 @@
   const modalEl = document.getElementById('modal');
   const modalBodyEl = document.getElementById('modalBody');
   const modalCloseEl = document.getElementById('modalClose');
-  const previewToggle = document.getElementById('previewToggle');
-  const resetBtn = document.getElementById('resetBtn');
   const loginSection = document.getElementById('login');
   const loginForm = document.getElementById('loginForm');
   const usernameEl = document.getElementById('username');
@@ -622,18 +620,7 @@
       if (e.key === 'Escape') closeModal();
     });
 
-    previewToggle.addEventListener('change', () => {
-      previewMode = previewToggle.checked;
-      render();
-    });
 
-    resetBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to reset all opened doors? This cannot be undone.')) {
-        opened = new Set();
-        saveOpened();
-        render();
-      }
-    });
     // Login
     if (loginForm) {
       loginForm.addEventListener('submit', (e) => {
@@ -742,10 +729,6 @@
       loginSection.style.display = showLogin ? 'block' : 'none';
     }
     calendarEl.style.display = showLogin ? 'none' : 'grid';
-    // Hide controls until logged in
-    const toggleWrap = previewToggle ? previewToggle.closest('.toggle') : null;
-    if (toggleWrap) toggleWrap.style.display = showLogin ? 'none' : 'inline-flex';
-    if (resetBtn) resetBtn.style.display = showLogin ? 'none' : 'inline-block';
     if (!showLogin) updateUserUI();
   }
 
