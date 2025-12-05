@@ -759,7 +759,7 @@
           <p class="countdown-text">Opens in:</p>
           <p class="countdown-time">${days} days, ${hours} hours, ${minutes} minutes</p>
         </div>
-        <p class="hint">💡 Enable <strong>Preview mode</strong> to peek early!</p>
+        <p class="hint">🎄 Come back on the unlock date to open this surprise!</p>
         <button class="btn" onclick="this.closest('.locked-modal').remove()">Got it</button>
       </div>
     `;
