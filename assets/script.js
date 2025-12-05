@@ -52,12 +52,9 @@
   const USER_KEY = 'advent.user.2025';
   
   const PASSCODES = {
-    julliana: 'matchaJ',
-    russell: 'chaosR',
-    zaira: 'greenZ',
-    alex: 'alex123',
-    bella: 'bella123',
-    chen: 'chen123'
+    julliana: 'brionski',
+    russell: 'psychkid',
+    zaira: 'dndzaiwa',
   };
   const today = new Date();
   const currentYear = today.getFullYear();
