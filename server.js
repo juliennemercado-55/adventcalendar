@@ -9,31 +9,43 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// In-memory storage as fallback
+let dbFallback = {};
+
 // MongoDB Connection with better error handling
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/advent-calendar';
 console.log('Connecting to MongoDB...');
 
+let mongoConnected = false;
+
 const mongooseOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 10000,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 5000,
+  maxPoolSize: 3,
   retryWrites: true,
-  // SSL/TLS options to fix certificate issues
-  ssl: true,
-  tlsInsecure: false,
 };
 
-mongoose.connect(mongoUri, mongooseOptions).catch(err => {
-  console.error('MongoDB connection failed:', err.message);
-  process.exit(1);
-});
+// Handle MongoDB connection
+mongoose.connect(mongoUri, mongooseOptions)
+  .then(() => {
+    mongoConnected = true;
+    console.log('✓ MongoDB connected successfully');
+  })
+  .catch(err => {
+    console.warn('⚠ MongoDB connection failed, using fallback storage:', err.message);
+    mongoConnected = false;
+  });
 
 mongoose.connection.on('connected', () => {
-  console.log('MongoDB connected successfully');
+  mongoConnected = true;
+  console.log('✓ MongoDB connected');
 });
 
 mongoose.connection.on('error', (err) => {
-  console.error('MongoDB error:', err);
+  mongoConnected = false;
+  console.error('✗ MongoDB error:', err.message);
 });
 
 // User Progress Schema
@@ -46,21 +58,18 @@ const userProgressSchema = new mongoose.Schema({
 
 let UserProgress;
 
-// Only define model if MongoDB is connected or will be
 try {
   UserProgress = mongoose.model('UserProgress', userProgressSchema);
 } catch (e) {
-  // Model already defined
   UserProgress = mongoose.model('UserProgress');
 }
-
-// Routes
 
 // Root route
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Advent Calendar Backend API',
     status: 'running',
+    database: mongoConnected ? 'MongoDB' : 'Fallback (In-Memory)',
     endpoints: {
       health: 'GET /api/health',
       getProgress: 'GET /api/progress/:username',
@@ -69,30 +78,35 @@ app.get('/', (req, res) => {
   });
 });
 
-// Health check - works without MongoDB
+// Health check - works with or without MongoDB
 app.get('/api/health', (req, res) => {
-  const mongooseConnected = mongoose.connection.readyState === 1;
   res.json({ 
     status: 'ok',
-    mongodb: mongooseConnected ? 'connected' : 'disconnected'
+    database: mongoConnected ? 'connected' : 'disconnected (using fallback)'
   });
 });
 
 // Get user progress
 app.get('/api/progress/:username', async (req, res) => {
   try {
-    if (mongoose.connection.readyState !== 1) {
-      return res.status(503).json({ error: 'Database not connected' });
-    }
-    
-    const progress = await UserProgress.findOne({ username: req.params.username });
-    if (progress) {
-      res.json(progress);
+    const username = req.params.username;
+
+    if (mongoConnected) {
+      // Use MongoDB
+      const progress = await UserProgress.findOne({ username });
+      if (progress) {
+        return res.json(progress);
+      }
+      return res.json({ username, openedDays: [], boxChoice: null });
     } else {
-      res.json({ username: req.params.username, openedDays: [], boxChoice: null });
+      // Use fallback storage
+      if (dbFallback[username]) {
+        return res.json(dbFallback[username]);
+      }
+      return res.json({ username, openedDays: [], boxChoice: null });
     }
   } catch (error) {
-    console.error('Error fetching progress:', error);
+    console.error('Error fetching progress:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -100,28 +114,41 @@ app.get('/api/progress/:username', async (req, res) => {
 // Save user progress
 app.post('/api/progress', async (req, res) => {
   try {
-    if (mongoose.connection.readyState !== 1) {
-      return res.status(503).json({ error: 'Database not connected' });
+    const { username, openedDays, boxChoice } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ error: 'Username required' });
     }
 
-    const { username, openedDays, boxChoice } = req.body;
-    
-    const progress = await UserProgress.findOneAndUpdate(
-      { username },
-      { openedDays, boxChoice, lastUpdated: new Date() },
-      { upsert: true, new: true }
-    );
-    
-    res.json(progress);
+    if (mongoConnected) {
+      // Use MongoDB
+      const progress = await UserProgress.findOneAndUpdate(
+        { username },
+        { openedDays, boxChoice, lastUpdated: new Date() },
+        { upsert: true, new: true }
+      );
+      return res.json(progress);
+    } else {
+      // Use fallback storage
+      const progress = {
+        username,
+        openedDays: openedDays || [],
+        boxChoice: boxChoice || null,
+        lastUpdated: new Date()
+      };
+      dbFallback[username] = progress;
+      console.log(`Saved progress for ${username} to fallback storage`);
+      return res.json(progress);
+    }
   } catch (error) {
-    console.error('Error saving progress:', error);
+    console.error('Error saving progress:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`✓ Server running on port ${PORT}`);
 });
 
 // Graceful error handling
@@ -133,3 +160,10 @@ server.on('error', (err) => {
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
+
+// Allow 30 seconds for MongoDB connection before fully starting
+setTimeout(() => {
+  if (!mongoConnected) {
+    console.log('📝 Using in-memory fallback storage - MongoDB still connecting...');
+  }
+}, 30000);
