@@ -37,7 +37,15 @@ const userProgressSchema = new mongoose.Schema({
   lastUpdated: { type: Date, default: Date.now }
 });
 
-const UserProgress = mongoose.model('UserProgress', userProgressSchema);
+let UserProgress;
+
+// Only define model if MongoDB is connected or will be
+try {
+  UserProgress = mongoose.model('UserProgress', userProgressSchema);
+} catch (e) {
+  // Model already defined
+  UserProgress = mongoose.model('UserProgress');
+}
 
 // Routes
 
