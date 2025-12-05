@@ -4,8 +4,8 @@ A simple, customizable web advent calendar. It shows 24 doors, unlocking one per
 
 ## Features
 
-- 25 doors with titles from per-user JSON 
-- Simple client-side login for 3 friends 
+- 25 doors with titles from per-user JSON
+- Simple client-side login for 3 friends
 - Locked until the calendar day (Dec 1–25), or unlocked in Preview
 - Modal with content: title, text, optional image and link
 - "Reset" clears opened door state (per user)
@@ -37,15 +37,16 @@ Each day entry supports:
 ```
 
 To add another user:
+
 1. Create `assets/days-<username>.json` with 25 entries
 2. Add passcode to `PASSCODES` in `assets/script.js`
 
 ```javascript
 const PASSCODES = {
-  julliana: 'matchaJ',
-  russell: 'chaosR',
-  zaira: 'greenZ',
-  newuser: 'password123'  // Add here
+  julliana: "matchaJ",
+  russell: "chaosR",
+  zaira: "greenZ",
+  newuser: "password123", // Add here
 };
 ```
 

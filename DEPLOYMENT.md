@@ -16,6 +16,7 @@ This is a fully client-side advent calendar that uses `localStorage` for persist
 ### 2. Personalize Content
 
 Edit the JSON files for each user:
+
 - `assets/days-julliana.json`
 - `assets/days-russell.json`
 - `assets/days-zaira.json`
@@ -25,11 +26,12 @@ Each day is a JSON object with: `title`, `text`, `image`, `link`
 ### 3. Update User Passcodes
 
 Edit `assets/script.js` around line 58:
+
 ```javascript
 const PASSCODES = {
-  julliana: 'matchaJ',
-  russell: 'chaosR',
-  zaira: 'greenZ'
+  julliana: "matchaJ",
+  russell: "chaosR",
+  zaira: "greenZ",
 };
 ```
 
@@ -58,15 +60,18 @@ Then open `http://localhost:8000`
 ## Troubleshooting
 
 **Changes not showing?**
+
 - Clear browser cache (Cmd+Shift+R on Mac)
 - Push commits: `git push`
 - Wait a few minutes for GitHub to rebuild
 
 **Login doesn't work?**
+
 - Check passcode is correct (case-sensitive)
 - Verify username exists in PASSCODES
 
 **Images not loading?**
+
 - Check file path (case-sensitive)
 - Verify file exists in repository
 - Make sure you pushed the files to GitHub
@@ -74,6 +79,7 @@ Then open `http://localhost:8000`
 ## Data Storage
 
 All progress is stored in browser `localStorage`:
+
 - Opened days auto-save locally
 - Persists across browser sessions
 - Each device has its own copy

@@ -77,10 +77,6 @@
   function saveOpened() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(opened)));
   }
-    } catch (error) {
-      console.log('Load failed (offline mode):', error);
-    }
-  }
 
   function doorState(dayNumber) {
     if (opened.has(dayNumber)) return 'opened';
