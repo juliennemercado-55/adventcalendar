@@ -692,7 +692,7 @@
       const greetingTextEl = document.querySelector('.greeting-text');
       if (greetingEl && greetingNameEl) {
         greetingEl.hidden = false;
-        greetingNameEl.textContent = 'love, julienne';
+        greetingNameEl.textContent = 'love, Julienne';
         // Apply per-letter animation to both lines
         if (greetingTextEl) applyPerLetterAnimation(greetingTextEl);
         if (greetingNameEl) applyPerLetterAnimation(greetingNameEl);
