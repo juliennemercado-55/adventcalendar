@@ -27,6 +27,19 @@ const UserProgress = mongoose.model('UserProgress', userProgressSchema);
 
 // Routes
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Advent Calendar Backend API',
+    status: 'running',
+    endpoints: {
+      health: 'GET /api/health',
+      getProgress: 'GET /api/progress/:username',
+      saveProgress: 'POST /api/progress'
+    }
+  });
+});
+
 // Get user progress
 app.get('/api/progress/:username', async (req, res) => {
   try {
