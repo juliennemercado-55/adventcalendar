@@ -50,7 +50,7 @@
 
   const STORAGE_KEY = 'advent.opened.2025';
   const USER_KEY = 'advent.user.2025';
-  const BACKEND_URL = 'https://advent-calendar-backend.onrender.com/api'; // Update with your backend URL
+  const BACKEND_URL = 'https://adventcalendar-ggg4.onrender.com/api';
   
   const PASSCODES = {
     julliana: 'matchaJ',
