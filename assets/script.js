@@ -50,7 +50,6 @@
 
   const STORAGE_KEY = 'advent.opened.2025';
   const USER_KEY = 'advent.user.2025';
-  const BACKEND_URL = 'https://adventcalendar-ggg4.onrender.com/api';
   
   const PASSCODES = {
     julliana: 'matchaJ',
@@ -77,47 +76,7 @@
 
   function saveOpened() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(opened)));
-    // Auto-sync to backend
-    syncProgressToBackend();
   }
-
-  // Sync progress with backend
-  async function syncProgressToBackend() {
-    if (!currentUser) return;
-    
-    try {
-      const boxChoice = localStorage.getItem(`box-${currentUser}`);
-      await fetch(`${BACKEND_URL}/progress`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: currentUser,
-          openedDays: Array.from(opened),
-          boxChoice: boxChoice
-        })
-      });
-    } catch (error) {
-      console.log('Sync failed (offline mode):', error);
-    }
-  }
-
-  // Load progress from backend
-  async function loadProgressFromBackend() {
-    if (!currentUser) return;
-    
-    try {
-      const response = await fetch(`${BACKEND_URL}/progress/${currentUser}`);
-      const data = await response.json();
-      
-      if (data.openedDays && Array.isArray(data.openedDays)) {
-        opened = new Set(data.openedDays);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data.openedDays));
-      }
-      
-      if (data.boxChoice) {
-        localStorage.setItem(`box-${currentUser}`, data.boxChoice);
-      }
-      render();
     } catch (error) {
       console.log('Load failed (offline mode):', error);
     }
@@ -700,10 +659,7 @@
         toggleViews();
         // Load content and render once ready
         loadDays().then(() => {
-          // Load progress from backend
-          loadProgressFromBackend().then(() => {
-            render();
-          });
+          render();
         });
       });
     }

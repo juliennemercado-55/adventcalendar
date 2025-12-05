@@ -1,68 +1,80 @@
-# Advent Calendar with Backend Sync
+# Advent Calendar - GitHub Pages Deployment
 
-## Deployment Instructions
+This is a fully client-side advent calendar that uses `localStorage` for persistence. No backend or database required!
 
-### 1. Deploy Frontend (GitHub Pages)
+## Quick Start - Deploy to GitHub Pages
+
+### 1. GitHub Pages Setup
 
 1. Push your code to GitHub
 2. Go to Settings → Pages
 3. Select `main` branch as source
-4. Frontend will be at: `https://yourusername.github.io/adventcalendar`
+4. Your calendar will be live at: `https://your-username.github.io/adventcalendar`
 
-### 2. Deploy Backend (Render.com - Free)
+## Customization
 
-#### Step 1: Set up MongoDB
+### 2. Personalize Content
 
-1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a free cluster
-3. Copy your connection string from MongoDB Atlas dashboard (format: `mongodb+srv://USERNAME:PASSWORD@cluster.mongodb.net/database-name`)
+Edit the JSON files for each user:
+- `assets/days-julliana.json`
+- `assets/days-russell.json`
+- `assets/days-zaira.json`
 
-#### Step 2: Deploy Backend
+Each day is a JSON object with: `title`, `text`, `image`, `link`
 
-1. Go to [Render.com](https://render.com/)
-2. Click "New +" → "Web Service"
-3. Connect your GitHub repo
-4. Select branch: `main`
-5. Build command: `npm install`
-6. Start command: `node server.js`
-7. Add Environment Variables:
-   - `MONGODB_URI`: Your MongoDB connection string from step 1
-   - `PORT`: 5000
+### 3. Update User Passcodes
 
-#### Step 3: Update Frontend
-
-1. Open `assets/script.js`
-2. Find: `const BACKEND_URL = 'https://advent-calendar-backend.onrender.com/api';`
-3. Replace with your actual Render URL: `https://your-app-name.onrender.com/api`
-4. Commit and push
-
-### Features
-
-✓ Auto-sync progress to backend when doors are opened
-✓ Works offline (falls back to localStorage)
-✓ Restore progress on any device when logging in
-✓ Persistent box game choices per user
-✓ No data loss on browser clear
-
-### How It Works
-
-1. User logs in → Backend loads their saved progress
-2. User opens door → Progress auto-saves to backend + localStorage
-3. User logs out → Progress is saved
-4. User logs in from different device → Progress restored from backend
-
-### Free Tier Limits
-
-- **MongoDB Atlas**: 512 MB storage (plenty for this app)
-- **Render.com**: 750 hours/month (always free)
-- **GitHub Pages**: Unlimited
-
-### Local Development
-
-```bash
-cd adventcalendar
-npm install
-node server.js
+Edit `assets/script.js` around line 58:
+```javascript
+const PASSCODES = {
+  julliana: 'matchaJ',
+  russell: 'chaosR',
+  zaira: 'greenZ'
+};
 ```
 
-Then visit: `http://localhost:5000` (or wherever you host frontend)
+## Features
+
+✓ **Client-side only** - No server required
+✓ **localStorage persistence** - Progress saves locally
+✓ **Offline support** - Works without internet
+✓ **Responsive** - Mobile, tablet, desktop friendly
+✓ **Personalized** - Different calendar per user
+✓ **Preview mode** - See any day ahead of time
+✓ **25 card types** - Various interactive content
+
+## Local Testing
+
+```bash
+# Option 1: Python 3
+python3 -m http.server 8000
+
+# Option 2: Node.js
+npx http-server
+```
+
+Then open `http://localhost:8000`
+
+## Troubleshooting
+
+**Changes not showing?**
+- Clear browser cache (Cmd+Shift+R on Mac)
+- Push commits: `git push`
+- Wait a few minutes for GitHub to rebuild
+
+**Login doesn't work?**
+- Check passcode is correct (case-sensitive)
+- Verify username exists in PASSCODES
+
+**Images not loading?**
+- Check file path (case-sensitive)
+- Verify file exists in repository
+- Make sure you pushed the files to GitHub
+
+## Data Storage
+
+All progress is stored in browser `localStorage`:
+- Opened days auto-save locally
+- Persists across browser sessions
+- Each device has its own copy
+- Clearing browser data resets progress

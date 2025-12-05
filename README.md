@@ -19,26 +19,35 @@ A simple, customizable web advent calendar. It shows 24 doors, unlocking one per
 
 ## Customize
 
-Edit `assets/days.json` with up to 24 entries. Each entry supports:
+Edit the per-user JSON files:
+
+- `assets/days-julliana.json` - Julliana's 25 days
+- `assets/days-russell.json` - Russell's 25 days
+- `assets/days-zaira.json` - Zaira's 25 days
+
+Each day entry supports:
 
 ```json
 {
   "title": "My Title",
   "text": "Message for this day.",
-  "image": "https://example.com/image.jpg",
+  "image": "assets/images/my-image.jpg",
   "link": "https://example.com"
 }
 ```
 
-You can omit `image` or `link`.
+To add another user:
+1. Create `assets/days-<username>.json` with 25 entries
+2. Add passcode to `PASSCODES` in `assets/script.js`
 
-To make unique calendars for friends, edit the per-user files:
-
-- `assets/days-alex.json`
-- `assets/days-bella.json`
-- `assets/days-chen.json`
-
-If you add another friend, update the login `<select>` in `index.html`, create `assets/days-<name>.json`, and add a passcode in `PASSCODES` inside `assets/script.js`.
+```javascript
+const PASSCODES = {
+  julliana: 'matchaJ',
+  russell: 'chaosR',
+  zaira: 'greenZ',
+  newuser: 'password123'  // Add here
+};
+```
 
 ## Run locally
 
