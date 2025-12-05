@@ -4,9 +4,9 @@ A simple, customizable web advent calendar. It shows 24 doors, unlocking one per
 
 ## Features
 
-- 24 doors with titles from per-user JSON (e.g., `assets/days-alex.json`)
-- Simple client-side login for 3 friends (Alex, Bella, Chen)
-- Locked until the calendar day (Dec 1–24), or unlocked in Preview
+- 25 doors with titles from per-user JSON 
+- Simple client-side login for 3 friends 
+- Locked until the calendar day (Dec 1–25), or unlocked in Preview
 - Modal with content: title, text, optional image and link
 - "Reset" clears opened door state (per user)
 - Responsive grid; works offline once loaded
@@ -16,9 +16,6 @@ A simple, customizable web advent calendar. It shows 24 doors, unlocking one per
 - `index.html` — Main page, login UI, layout
 - `assets/style.css` — Styles (calendar + login)
 - `assets/script.js` — Calendar logic, login, per-user state
-- `assets/days.json` — Default content (used if not logged in)
-- `assets/days-julliana.json`, `assets/days-russell.json`, `assets/days-zaira.json` — Tailored calendars
-- `assets/days-alex.json`, `assets/days-bella.json`, `assets/days-chen.json` — Sample calendars
 
 ## Customize
 
