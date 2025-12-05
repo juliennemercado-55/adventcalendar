@@ -13,10 +13,17 @@ app.use(express.json());
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/advent-calendar';
 console.log('Connecting to MongoDB...');
 
-mongoose.connect(mongoUri, {
+const mongooseOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-}).catch(err => {
+  serverSelectionTimeoutMS: 10000,
+  retryWrites: true,
+  // SSL/TLS options to fix certificate issues
+  ssl: true,
+  tlsInsecure: false,
+};
+
+mongoose.connect(mongoUri, mongooseOptions).catch(err => {
   console.error('MongoDB connection failed:', err.message);
   process.exit(1);
 });
