@@ -715,6 +715,7 @@
       const span = document.createElement('span');
       span.className = `greet-char ${colorClasses[i % 3]}`;
       span.textContent = ch;
+      span.style.marginRight = ch === ' ' ? '0.5em' : '0';
       frag.appendChild(span);
     });
     el.appendChild(frag);
