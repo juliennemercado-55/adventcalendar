@@ -60,7 +60,6 @@
   const currentDay = today.getDate();
 
   let opened = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
-  let previewMode = false;
   let daysData = [];
   let currentUser = localStorage.getItem(USER_KEY) || null;
   
@@ -75,7 +74,6 @@
 
   function doorState(dayNumber) {
     if (opened.has(dayNumber)) return 'opened';
-    if (previewMode) return 'unlocked';
     const unlocked = isDecember && dayNumber <= currentDay;
     return unlocked ? 'unlocked' : 'locked';
   }
@@ -561,13 +559,20 @@
           img.alt = day.title || 'Advent image';
           modalBodyEl.appendChild(img);
           
-          // Add download button only for Drinks on ME cards
+          // Add download button for Drinks on ME cards or LEGO minifigure
           if (day.title.toLowerCase().includes('drinks on me')) {
             const downloadBtn = document.createElement('a');
             downloadBtn.href = day.image;
             downloadBtn.download = `${day.title || 'voucher'}.png`;
             downloadBtn.className = 'download-btn';
             downloadBtn.textContent = 'Download Voucher';
+            modalBodyEl.appendChild(downloadBtn);
+          } else if (day.title.toLowerCase().includes('lego minifigure')) {
+            const downloadBtn = document.createElement('a');
+            downloadBtn.href = day.image;
+            downloadBtn.download = `${day.title || 'minifigure'}.png`;
+            downloadBtn.className = 'download-btn';
+            downloadBtn.textContent = 'Download Minifigure';
             modalBodyEl.appendChild(downloadBtn);
           }
         }
